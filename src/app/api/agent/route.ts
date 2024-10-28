@@ -7,7 +7,8 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { ChatOpenAI } from "@langchain/openai";
 import { StateGraph, START, END } from "@langchain/langgraph";
-import { MemorySaver, Annotation } from "@langchain/langgraph";
+import { Annotation } from "@langchain/langgraph";
+import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { GotoHuman } from "gotohuman";
 
@@ -30,7 +31,6 @@ export async function POST(request: Request) {
     const loader = new CheerioWebBaseLoader(url);
     const docs = await loader.load();
     return docs.length ? (docs[0]?.pageContent || "") : "";
-    // return "EcoWave Innovations is a leader in sustainable technology, founded in 2020 to transform energy and environmental interactions. Our mission is to empower energy independence and sustainability through innovative solutions. We envision a world with accessible sustainable energy, driving growth and preserving the planet. Our core values include innovation, sustainability, integrity, and collaboration. We offer products like SolarWave Panels, WindWave Turbines, EcoGrid Solutions, GreenConsult Advisory, and WaveCharge Stations. Since inception, we've helped over 500 businesses and 10,000 households reduce carbon emissions by 1 million tons annually. By 2030, we aim to power 1 million homes and businesses with renewable energy. Contact us at www.ecowaveinnovations.com or info@ecowaveinnovations.com.";
   }, {
     name: "scraper",
     description:
@@ -179,8 +179,10 @@ export async function POST(request: Request) {
     .addEdge("tools", "agent")
     .addEdge("askHuman", "agent");
   
-  // Initialize memory to persist state between graph runs
-  const checkpointer = new MemorySaver();
+  // Initialize DB to persist state of the conversation thread between graph runs
+  const checkpointer = PostgresSaver.fromConnString(process.env.POSTGRES_CONN_STRING!);
+  if (!req.meta?.threadId) //if this is already a response we don't need to setup again
+    await checkpointer.setup();
   
   // Finally, we compile it!
   // This compiles it into a LangChain Runnable.
@@ -196,7 +198,9 @@ export async function POST(request: Request) {
     const emailTextChanged = req.responseValues.emailDraft?.wasEdited;
     console.log(`GTH accepted ${accepted} emailTextChanged ${emailTextChanged} emailText ${emailText.slice(0,50)}`)
     const currentState = await app.getState(appConfig);
-    console.log("currentState.values.messages", currentState?.values?.messages)
+    const currentMessages = currentState?.values?.messages
+    console.log("currentState.values.messages", currentMessages)
+    if (!currentMessages) return new Response("Couldn't load persisted thread with ID " + req.meta?.threadId, { status: 404 })
     const askHumanToolCallId = currentState.values.messages[currentState.values.messages.length - 1].tool_calls[0].id;
 
     // We now create the tool call with the id and the response we want
@@ -209,10 +213,13 @@ export async function POST(request: Request) {
     // This will apply this update as this node,
     // which will make it so that afterwards it continues as normal
     await app.updateState(appConfig, { messages: [toolMessage] }, "askHuman");
+    
+    console.log("--- State after update ---")
+    console.log(await app.getState(appConfig));
   }
 
   // Use the Runnable
-  const finalState = await app.invoke({}, appConfig);
+  const finalState = await app.invoke(req.responseValues ? null : {}, appConfig);
   const finalMsg = finalState?.messages?.length ? finalState.messages[finalState.messages.length - 1] : ""
   console.log(finalMsg.content);
   return Response.json({"answer": finalMsg.content, "domain": finalState.leadWebsiteUrl})
