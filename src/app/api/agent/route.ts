@@ -85,6 +85,7 @@ export async function POST(request: Request) {
     }),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const askHumanTool = tool((_) => {
     return "The human response will be injected";
   }, {
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
   const sendEmailTool = tool(({emailRecipient, emailBody}) => {
     // TODO: implement email sending.
     // Again, note that you can set up your form at gotoHuman with any webhook URL, so that a submitted review can trigger any HTTP endpoint you like to proceed your workflow. It doesn't have to go back to this app.
-    return "The email was sent to " + emailRecipient;
+    return `The email was sent to ${emailRecipient}: ${emailBody.slice(0,50)}`;
   }, {
     name: "sendEmail",
     description: "Send an email.",
