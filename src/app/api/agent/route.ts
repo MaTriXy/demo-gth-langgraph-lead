@@ -206,7 +206,7 @@ export async function POST(request: Request) {
     // We now create the tool call with the id and the response we want
     const toolMessage = new ToolMessage({
       tool_call_id: askHumanToolCallId,
-      content: `The human supervisor ${accepted ? 'accepted' : 'rejected'} the drafted email. ${emailTextChanged ? `The text was edited, so please send this edited text instead: ${emailText}` : ''}`
+      content: `The human supervisor ${accepted ? 'accepted' : 'rejected'} the drafted email. ${accepted && emailTextChanged ? `The text was edited, so please send this edited text instead: ${emailText}` : ''}`
     });
     // We now update the state
     // Notice that we are also specifying `asNode: "askHuman"`
