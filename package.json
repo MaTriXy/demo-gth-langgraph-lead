@@ -1,0 +1,33 @@
+{
+  "name": "demo-gth-langgraph-lead",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.7",
+    "@langchain/core": "^0.3.13",
+    "@langchain/langgraph": "^0.2.16",
+    "@langchain/openai": "^0.3.11",
+    "cheerio": "^1.0.0",
+    "gotohuman": "0.2.2",
+    "next": "14.2.15",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "overrides": {
+    "@langchain/core": "^0.3.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.15",
+    "typescript": "^5"
+  }
+}
