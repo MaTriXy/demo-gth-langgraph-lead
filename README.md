@@ -13,9 +13,9 @@ This agent can be triggered with the email address of a new lead (from a waitlis
 
 This example uses our **"Sales Lead (Simple)"** template. Select it when [creating a new form](https://app.gotohuman.com/create). You will also enter a webhook that is called with the review response.
 
-### Clone this agent
+### Deploy this agent
 
-Clone this Next.js repo and set up your environment variables
+Clone this Next.js repo, deploy it (e.g. to Vercel) and set up your environment variables
 
 ```
 OPENAI_API_KEY = sk-proj-XXX
@@ -24,8 +24,16 @@ GOTOHUMAN_FORM_ID=abcdef123
 POSTGRES_CONN_STRING="postgres://..."
 ```
 
+It uses our JS/TS SDK to [send requests](https://docs.gotohuman.com/send-requests) for human review
+
 ### Run it
 
-Send a request for human review [via API](https://docs.gotohuman.com/send-requests)
+Trigger your agent whenever you get your hands on a new lead:
 
-Simply call it whenever you get your hands on a new lead. gotoHuman will send a notification as soon as the agent is done with its' research, drafted an outreach message and needs approval.
+`HTTP POST [DEPLOY_URL]/api/agent`
+```json
+{
+  "email": "new.lead@email.com"
+}
+```
+gotoHuman will send a notification as soon as the agent is done with its' research, drafted an outreach message and needs approval.
