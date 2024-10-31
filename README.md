@@ -11,7 +11,7 @@ This agent can be triggered with the email address of a new lead (from a waitlis
 
 ### Create a form
 
-This example uses our **"Sales Lead (Simple)"** template. Select it when [creating a new form](https://app.gotohuman.com/create). For the webhook, enter the URL where you deploy this app. It is called for each review response.
+This example uses our **"Sales Lead (Simple)"** template. Select it when [creating a new form](https://app.gotohuman.com/create). For the webhook, enter the URL where you deploy this app. It is called for each review response to continue the workflow.
 
 ### Deploy this agent
 
