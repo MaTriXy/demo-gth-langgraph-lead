@@ -12,7 +12,7 @@ import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { GotoHuman } from "gotohuman";
 
-const gotoHuman = new GotoHuman(process.env.GOTOHUMAN_API_KEY)
+const gotoHuman = new GotoHuman()
 
 export async function POST(request: Request) {
   const req = await request.json()
@@ -138,6 +138,7 @@ export async function POST(request: Request) {
         .addFieldData("websiteSummary", args?.companyDescription)
         .addFieldData("emailDraft", args?.emailDraft)
         .addMetaData("threadId", threadId)
+        .assignToUsers(["jess@acme.org"])
       const gotoHumanResponse = await reviewRequest.sendRequest()
       console.log("gotoHumanResponse", gotoHumanResponse)
       return "askHuman";
