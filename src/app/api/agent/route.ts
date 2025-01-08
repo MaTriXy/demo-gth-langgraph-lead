@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       new SystemMessage("You are a helpful website content summarizer. You will be passed the content of a scraped company website. Please summarize it in 250-300 words focusing on what kind of company this is, the services they offer and how they operate."),
       new HumanMessage(content),
     ];
-    const model = new ChatOpenAI({ temperature: 0.5, model: "gpt-4o" })
+    const model = new ChatOpenAI({ temperature: 0.5, model: "gpt-4o-mini" })
     const response = await model.invoke(messages);
     return response.content
   }, {
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       new HumanMessage((noDomain ? `No additional information found about the prospect` : `#Company website summary:
       ${companyDescription}`)),
     ];
-    const model = new ChatOpenAI({ temperature: 0.75, model: "gpt-4o" })
+    const model = new ChatOpenAI({ temperature: 0.75, model: "gpt-4o-mini" })
     const response = await model.invoke(messages);
     return response.content
   }, {
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
   const tools = [webScrapeTool, summarizerTool, draftTool, sendEmailTool];
   const toolNode = new ToolNode(tools);
   
-  const model = new ChatOpenAI({ temperature: 0.25, model: "gpt-4o" }).bindTools([...tools, askHumanTool]);
+  const model = new ChatOpenAI({ temperature: 0.25, model: "gpt-4o-mini" }).bindTools([...tools, askHumanTool]);
   
   // Define the function that determines whether to continue or not
   // We can extract the state typing via `StateAnnotation.State`
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
         .addFieldData("websiteSummary", args?.companyDescription)
         .addFieldData("emailDraft", args?.emailDraft)
         .addMetaData("threadId", threadId)
-        .assignToUsers(["jess@acme.org"])
+        // .assignToUsers(["jess@acme.org"])
       const gotoHumanResponse = await reviewRequest.sendRequest()
       console.log("gotoHumanResponse", gotoHumanResponse)
       return "askHuman";
