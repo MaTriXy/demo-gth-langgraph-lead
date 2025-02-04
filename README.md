@@ -2,18 +2,19 @@
 
 An AI agent [built with LangGraph](https://langchain-ai.github.io/langgraphjs/) integrating [gotoHuman](https://gotohuman.com) to keep a **human in the loop**.
 
-[gotoHuman](https://gotohuman.com) helps you build production-ready AI workflows by making it really easy to include human approvals. Keep a human in the loop to review AI‑generated content, approve critical actions or provide input.  
-Set up a fully customized review step capturing any relevant data (text, images, markdown,...) and required human input (buttons, checkboxes, inputs,...). Then trigger it from your application whenever human review from your team is needed.
+[gotoHuman](https://gotohuman.com) provides you with a central dashboard to review AI‑generated content, approve critical actions or provide input. And it seamlessly integrates with the AI stack of your choice.  
 
-This example workflow uses our JS/TS SDK to [send requests](https://docs.gotohuman.com/send-requests) for human review.
+This example workflow uses our [Typescript SDK](https://github.com/gotohuman/gotohuman-js-sdk).
 
-Trigger it with the email address of a new lead (from a waitlist, newsletter signup or lead magnet) to draft a personalized initial email outreach that is reviewed by a human before it is sent out.
+It takes the email address of a new sales lead and drafts a personalized initial email outreach. The draft is reviewed and revised by a human before it gets sent out.
 
 ## Set it up
 
 ### Create a review form
 
-This example uses our **"Sales Lead (Simple)"** template which contains just the right fields for our use case. Select it when [creating a new review form](https://app.gotohuman.com/create). For the webhook, enter the URL where you deploy this app. It is called for each review response to continue the workflow.  
+In gotoHuman, you can simply import the form template used here with the ID `OmmAnhbnWmird3oz60q2`.  
+For the webhook, enter the URL where you deploy this app. It is called for each review response to resume your graph.  
+
 Reviewers will find new pending reviews in their [gotoHuman inbox](https://app.gotohuman.com). You can also opt-in to receive a short-lived public link that you can freely send to reviewers.
 
 ### Deploy this agent
@@ -29,8 +30,12 @@ POSTGRES_CONN_STRING="postgres://..."
 
 ### Run it
 
-Trigger your agent whenever you get your hands on a new lead:
+Trigger your agent whenever you get your hands on a new email address:
 
+#### Manually in gotoHuman
+Create a new trigger form with a text input field with ID `email` and include the same webhook as above. You'll see a trigger button appear in gotoHuman.
+
+#### Via API
 `HTTP POST [DEPLOY_URL]/api/agent`
 ```json
 {
